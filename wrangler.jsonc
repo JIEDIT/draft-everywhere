@@ -1,0 +1,11 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "draft-everywhere-local",
+  "compatibility_date": "2026-08-19",
+  "main": "src/local-worker.js",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  }
+}

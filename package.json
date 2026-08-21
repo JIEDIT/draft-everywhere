@@ -1,0 +1,34 @@
+{
+  "name": "@jiedit/draft-everywhere-core",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "public",
+    "src",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "exports": {
+    "./server": "./src/generation-handler.js",
+    "./local-worker": "./src/local-worker.js",
+    "./catalog": "./src/providers/catalog.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "wrangler dev --env-file .env.local --ip 127.0.0.1",
+    "test": "node --test test/*.test.js test/*.test.cjs",
+    "pack:check": "npm pack --dry-run"
+  },
+  "dependencies": {
+    "twitter-text": "^3.1.0"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0",
+    "wrangler": "^4.114.0"
+  }
+}
