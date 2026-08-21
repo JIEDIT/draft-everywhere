@@ -252,7 +252,7 @@ test('failed platform keeps retry on its tab and retry does not change successfu
   const activeBeforeRetry = dom.window.document.querySelector('.rtab.active').dataset.platform;
 
   retry.click();
-  await new Promise(resolve => dom.window.setTimeout(resolve, 25));
+  await waitFor(dom.window, () => dom.window.document.querySelector('.card[data-platform="xhs"]'));
 
   assert.equal(callCounts.twitter, 1);
   assert.equal(callCounts.medium, 1);
