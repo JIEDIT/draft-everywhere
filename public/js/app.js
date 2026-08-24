@@ -14,7 +14,6 @@ const I18N = {
   zh: {
     title: '一稿<span class="accent-zh">多发</span>',
     tagline: '把 raw draft 一稿生成 X / Substack / Medium / LinkedIn / 小红书五个平台的版本,每个版本都可以原地修改。小红书自动转中文,其他平台自动转英文。',
-    supportLink: '支持这个工具并留下反馈 →',
     srcLabel:'RAW DRAFT', outLabel:'PLATFORM VERSIONS',
     draftPh:'把你的 raw draft 贴在这里……', go:'生成各平台版本',
     generating:'生成中',
@@ -52,7 +51,6 @@ const I18N = {
   en: {
     title: 'Draft <span class="accent-en">Everywhere</span>',
     tagline: 'Turn one raw draft into platform-ready posts for X / Substack / Medium / LinkedIn / Xiaohongshu. Every version is editable in place. Xiaohongshu outputs in Chinese, everything else in English.',
-    supportLink: 'Support the tool & share feedback →',
     srcLabel:'RAW DRAFT', outLabel:'PLATFORM VERSIONS',
     draftPh:'Paste your raw draft here…', go:'Generate platform versions',
     generating:'Generating',
