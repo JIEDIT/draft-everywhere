@@ -58,7 +58,21 @@ test('exhausted trial disables generation but preserves restored draft and cards
   assert.equal(dom.window.document.getElementById('draft').value, 'Saved draft');
   assert.equal(dom.window.document.querySelectorAll('.card').length, 1);
   assert.match(dom.window.document.body.textContent, /免费试用已结束/);
+  assert.match(dom.window.document.querySelector('[data-role="runtime-status"]').textContent, /现有结果仍可编辑与复制/);
+  assert.equal(dom.window.document.getElementById('supportWidget').parentElement.dataset.role, 'runtime-support');
+  assert.equal(dom.window.document.querySelector('.intro-row #supportWidget'), null);
+  assert.equal(dom.window.document.querySelector('[data-role="runtime-support"]').nextElementSibling.dataset.role, 'github-local');
   dom.window.close();
+});
+
+test('available trial and local mode keep the single Ko-fi widget beside the introduction', async () => {
+  for (const capabilities of [trial(2), local]) {
+    const dom = await createRuntimeApp(capabilities);
+    assert.ok(dom.window.document.querySelector('.intro-row #supportWidget'));
+    assert.equal(dom.window.document.querySelector('[data-role="runtime-support"]'), null);
+    assert.equal(dom.window.document.querySelectorAll('#supportWidget').length, 1);
+    dom.window.close();
+  }
 });
 
 test('local starts with Select Provider and enables generation only for configured provider and model', async () => {

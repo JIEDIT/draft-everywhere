@@ -37,7 +37,7 @@ const I18N = {
     cancelClear:'取消', confirmClear:'清除草稿',
     substackNote:'SUBSTACK NOTE · 推广短帖',
     trialComplete:'免费试用已结束',
-    trialCompleteBody:'现有草稿和生成结果仍可继续编辑。',
+    trialCompleteBody:'现有结果仍可编辑与复制。',
     runLocal:'使用你的 API 在本地运行 →',
     trialLeft:(remaining, limit)=>`剩余 ${remaining} / ${limit} 次生成机会`,
     trialReset:date=>`重置时间 ${date}`,
@@ -74,7 +74,7 @@ const I18N = {
     cancelClear:'Cancel', confirmClear:'Clear Draft',
     substackNote:'SUBSTACK NOTE · PROMOTIONAL POST',
     trialComplete:'FREE TRIAL COMPLETE',
-    trialCompleteBody:'Your existing drafts and results remain editable.',
+    trialCompleteBody:'Your existing results remain editable and copyable.',
     runLocal:'RUN LOCALLY WITH YOUR API →',
     trialLeft:(remaining, limit)=>`${remaining} OF ${limit} GENERATIONS LEFT`,
     trialReset:date=>`Resets ${date}`,
@@ -180,6 +180,8 @@ function persistRuntimeSelection(){
 
 function renderRuntimeStatus(capabilities){
   const mount = document.querySelector('[data-role="runtime-status"]');
+  const supportWidget = document.getElementById('supportWidget');
+  const introRow = document.querySelector('.intro-row');
   mount.innerHTML = '';
   if(capabilities.mode === 'trial'){
     const usage = capabilities.usage;
@@ -187,11 +189,16 @@ function renderRuntimeStatus(capabilities){
     const resetDate = new Date(usage.resetsAt).toLocaleString(lang === 'zh' ? 'zh-CN' : 'en-US');
     mount.className = 'runtime-status trial-status' + (runtimeState.exhausted ? ' exhausted' : '');
     mount.innerHTML = runtimeState.exhausted
-      ? `<div><strong>${t('trialComplete')}</strong><span>${t('trialCompleteBody')}</span></div><a data-role="github-local" href="${capabilities.githubUrl}" target="_blank" rel="noreferrer">${t('runLocal')}</a>`
+      ? `<div><strong>${t('trialComplete')}</strong><span>${t('trialCompleteBody')}</span><span>${t('trialReset')(resetDate)}</span></div><div data-role="runtime-support"></div><a data-role="github-local" href="${capabilities.githubUrl}" target="_blank" rel="noreferrer">${t('runLocal')}</a>`
       : `<div><strong>${t('trialLeft')(usage.remaining, usage.limit)}</strong><span>${t('trialReset')(resetDate)}</span></div><a data-role="github-local" href="${capabilities.githubUrl}" target="_blank" rel="noreferrer">${t('githubOwnApi')}</a>`;
+    if(supportWidget){
+      const target = runtimeState.exhausted ? mount.querySelector('[data-role="runtime-support"]') : introRow;
+      target.appendChild(supportWidget);
+    }
     return;
   }
 
+  if(supportWidget) introRow.appendChild(supportWidget);
   mount.className = 'runtime-status local-status';
   mount.innerHTML = `<div class="runtime-mode"><strong>${t('localMode')}</strong><span>${t('localModeBody')}</span></div>
     <label><span>${t('providerLabel')}</span><select data-role="provider-select"><option value="">${t('selectProvider')}</option></select></label>
