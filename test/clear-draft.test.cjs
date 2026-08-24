@@ -184,3 +184,19 @@ test('a refresh restores uncleared raw draft and generated results', async () =>
   assert.equal(refreshed.window.document.getElementById('clearDraft').hidden, false);
   refreshed.window.close();
 });
+
+test('support link opens Ko-fi in a new tab and follows the selected language', () => {
+  const dom = createApp();
+  const { window } = dom;
+  const supportLink = window.document.getElementById('supportLink');
+
+  assert.equal(supportLink.href, 'https://ko-fi.com/jieliu');
+  assert.equal(supportLink.target, '_blank');
+  assert.equal(supportLink.rel, 'noopener noreferrer');
+  assert.equal(supportLink.querySelector('.support-link-icon').getAttribute('aria-hidden'), 'true');
+  assert.equal(supportLink.textContent.trim(), '支持这个工具并留下反馈 →');
+
+  window.document.getElementById('langToggle').click();
+  assert.equal(supportLink.textContent.trim(), 'Support the tool & share feedback →');
+  dom.window.close();
+});
