@@ -185,18 +185,15 @@ test('a refresh restores uncleared raw draft and generated results', async () =>
   refreshed.window.close();
 });
 
-test('support link opens Ko-fi in a new tab and follows the selected language', () => {
+test('Ko-fi widget uses the official script with the exact compact CTA', () => {
   const dom = createApp();
   const { window } = dom;
-  const supportLink = window.document.getElementById('supportLink');
+  const widget = window.document.getElementById('supportWidget');
+  const scripts = widget.querySelectorAll('script');
 
-  assert.equal(supportLink.href, 'https://ko-fi.com/jieliu');
-  assert.equal(supportLink.target, '_blank');
-  assert.equal(supportLink.rel, 'noopener noreferrer');
-  assert.equal(supportLink.querySelector('.support-link-icon').getAttribute('aria-hidden'), 'true');
-  assert.equal(supportLink.textContent.trim(), '支持这个工具并留下反馈 →');
-
-  window.document.getElementById('langToggle').click();
-  assert.equal(supportLink.textContent.trim(), 'Support the tool & share feedback →');
+  assert.equal(scripts[0].src, 'https://storage.ko-fi.com/cdn/widget/Widget_2.js');
+  assert.match(scripts[1].textContent, /kofiwidget2\.init\('Support us & share feedback', '#000000', 'L4X425OSS2'\)/);
+  assert.match(html, /https:\/\/ko-fi\.com\/jieliu/);
+  assert.doesNotMatch(scripts[1].textContent, /Support us  share feedback/);
   dom.window.close();
 });
