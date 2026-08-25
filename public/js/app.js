@@ -86,9 +86,10 @@ const I18N = {
     keyReady:'API KEY READY', keyMissing:'API KEY NOT CONFIGURED',
   }
 };
-let lang = 'zh';
+let lang = 'en';
 function t(key){ return I18N[lang][key]; }
 function applyLang(){
+  document.documentElement.lang = lang;
   document.body.classList.toggle('lang-zh', lang === 'zh');
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const k = el.getAttribute('data-i18n');

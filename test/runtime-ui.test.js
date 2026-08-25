@@ -39,13 +39,17 @@ const local = {
   ],
 };
 
-test('trial shows remaining usage and GitHub CTA without provider controls', async () => {
+test('trial starts in English and can switch to Chinese', async () => {
   const dom = await createRuntimeApp(trial(2));
-  assert.match(dom.window.document.body.textContent, /剩余 2 \/ 3 次生成机会/);
+  assert.equal(dom.window.document.documentElement.lang, 'en');
+  assert.equal(dom.window.document.body.classList.contains('lang-zh'), false);
+  assert.equal(dom.window.document.getElementById('langToggle').classList.contains('is-zh'), false);
+  assert.match(dom.window.document.body.textContent, /2 OF 3 GENERATIONS LEFT/i);
   assert.equal(dom.window.document.querySelector('[data-role="provider-select"]'), null);
   assert.match(dom.window.document.querySelector('[data-role="github-local"]').href, /github.com\/JIEDIT\/draft-everywhere/);
   dom.window.document.getElementById('langToggle').click();
-  assert.match(dom.window.document.body.textContent, /2 OF 3 GENERATIONS LEFT/i);
+  assert.equal(dom.window.document.documentElement.lang, 'zh');
+  assert.match(dom.window.document.body.textContent, /剩余 2 \/ 3 次生成机会/);
   dom.window.close();
 });
 
@@ -57,8 +61,8 @@ test('exhausted trial disables generation but preserves restored draft and cards
   assert.equal(dom.window.document.getElementById('go').disabled, true);
   assert.equal(dom.window.document.getElementById('draft').value, 'Saved draft');
   assert.equal(dom.window.document.querySelectorAll('.card').length, 1);
-  assert.match(dom.window.document.body.textContent, /免费试用已结束/);
-  assert.match(dom.window.document.querySelector('[data-role="runtime-status"]').textContent, /现有结果仍可编辑与复制/);
+  assert.match(dom.window.document.body.textContent, /FREE TRIAL COMPLETE/);
+  assert.match(dom.window.document.querySelector('[data-role="runtime-status"]').textContent, /results remain editable and copyable/i);
   assert.equal(dom.window.document.getElementById('supportWidget').parentElement.dataset.role, 'runtime-support');
   assert.equal(dom.window.document.querySelector('.intro-row #supportWidget'), null);
   assert.equal(dom.window.document.querySelector('[data-role="runtime-support"]').nextElementSibling.dataset.role, 'github-local');
@@ -80,9 +84,9 @@ test('local starts with Select Provider and enables generation only for configur
   const provider = dom.window.document.querySelector('[data-role="provider-select"]');
   const model = dom.window.document.querySelector('[data-role="model-select"]');
   assert.equal(provider.value, '');
-  assert.match(provider.options[0].textContent, /选择服务商/);
+  assert.match(provider.options[0].textContent, /SELECT PROVIDER/);
   assert.equal(model.disabled, true);
-  assert.match(model.options[0].textContent, /选择模型/);
+  assert.match(model.options[0].textContent, /SELECT MODEL/);
 
   provider.value = 'openai';
   provider.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
@@ -90,11 +94,11 @@ test('local starts with Select Provider and enables generation only for configur
   model.value = 'gpt-5-mini';
   model.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
   assert.equal(dom.window.document.getElementById('go').disabled, false);
-  assert.match(dom.window.document.querySelector('[data-role="key-status"]').textContent, /API KEY 已配置/i);
+  assert.match(dom.window.document.querySelector('[data-role="key-status"]').textContent, /API KEY READY/i);
   dom.window.document.getElementById('langToggle').click();
   assert.equal(dom.window.document.querySelector('[data-role="provider-select"]').value, 'openai');
   assert.equal(dom.window.document.querySelector('[data-role="model-select"]').value, 'gpt-5-mini');
-  assert.match(dom.window.document.body.textContent, /LOCAL MODE/);
+  assert.match(dom.window.document.body.textContent, /本地模式/);
   dom.window.close();
 });
 

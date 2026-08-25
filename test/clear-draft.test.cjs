@@ -153,7 +153,7 @@ test('confirming clear removes draft, results, and storage but preserves display
   assert.equal(window.document.querySelectorAll('.rtab.ghost').length, 5);
   assert.equal(window.localStorage.getItem('draft-everywhere:workspace:v1'), null);
   assert.equal(linkedin.checked, false);
-  assert.equal(window.document.body.classList.contains('lang-zh'), false);
+  assert.equal(window.document.body.classList.contains('lang-zh'), true);
   assert.equal(window.document.activeElement, window.document.getElementById('draft'));
   dom.window.close();
 });

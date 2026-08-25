@@ -121,7 +121,7 @@ test('each selected platform displays independent progress inside its own tab wi
   assert.equal(dom.window.document.querySelectorAll('.rtab.processing').length, 3);
   assert.equal(dom.window.document.querySelectorAll('.rtab[aria-busy="true"]').length, 3);
   assert.equal(dom.window.document.querySelectorAll('.rtab [aria-live="polite"]').length, 3);
-  assert.match(dom.window.document.querySelector('.rtab[data-platform="twitter"]').textContent, /生成中/);
+  assert.match(dom.window.document.querySelector('.rtab[data-platform="twitter"]').textContent, /Generating/);
   assert.equal(dom.window.document.querySelector('.platform-jobs'), null);
   assert.equal(dom.window.document.querySelector('select'), null);
   Object.entries(requests).forEach(([platform, request]) => request.resolve(response(ready(platform))));
@@ -170,7 +170,7 @@ test('validating and retrying states remain independent and retry shows its boun
   await generate(dom.window, ['twitter']);
   requests[0].resolve(response(ready('twitter')));
   await new Promise(resolve => dom.window.setTimeout(resolve, 0));
-  assert.match(dom.window.document.querySelector('.rtab[data-platform="twitter"]').textContent, /校验中/);
+  assert.match(dom.window.document.querySelector('.rtab[data-platform="twitter"]').textContent, /Validating/);
 
   await new Promise(resolve => dom.window.setTimeout(resolve, 25));
   const firstTab = dom.window.document.querySelector('.rtab[data-platform="twitter"]');
@@ -185,7 +185,7 @@ test('validating and retrying states remain independent and retry shows its boun
   requests[1].resolve(response({ platform: 'xhs', status: 'failed', error: { message: 'invalid' } }, 422));
   await new Promise(resolve => failedDom.window.setTimeout(resolve, 0));
   failedDom.window.document.querySelector('[data-role="retry-platform"]').click();
-  assert.match(failedDom.window.document.querySelector('.rtab[data-platform="xhs"]').textContent, /重试中… \(1\/2\)/);
+  assert.match(failedDom.window.document.querySelector('.rtab[data-platform="xhs"]').textContent, /Retrying… \(1\/2\)/);
   requests[2].resolve(response(ready('xhs')));
   await new Promise(resolve => failedDom.window.setTimeout(resolve, 25));
   dom.window.close();
@@ -211,7 +211,7 @@ test('invalid generated content stays hidden while only that platform adjusts le
   await generate(dom.window, ['xhs']);
 
   const tab = dom.window.document.querySelector('.rtab[data-platform="xhs"]');
-  assert.match(tab.textContent, /调整长度中… \(1\/2\)/);
+  assert.match(tab.textContent, /Adjusting length… \(1\/2\)/);
   assert.equal(dom.window.document.querySelector('.card[data-platform="xhs"]'), null);
   assert.equal(calls.length, 2);
   assert.equal(calls[1].platform, 'xhs');
@@ -244,7 +244,7 @@ test('failed platform keeps retry on its tab and retry does not change successfu
   const failedTab = dom.window.document.querySelector('.rtab.failed[data-platform="xhs"]');
   const retry = failedTab.querySelector('[data-role="retry-platform"]');
   assert.ok(retry);
-  assert.match(failedTab.textContent, /重试/);
+  assert.match(failedTab.textContent, /Retry/);
   assert.equal(failedTab.getAttribute('aria-busy'), null);
   assert.equal(Array.from(dom.window.document.querySelectorAll('[data-role="retry-platform"]')).filter(button => !button.hidden).length, 1);
 
@@ -313,16 +313,16 @@ test('near-limit and over-limit edits show remaining or exceeded text and guard 
   const body = card.querySelector('[data-role="body"]');
   const meter = card.querySelector('[data-role="meter"]');
   const copy = card.querySelector('[data-role="copy-content"]');
-  assert.match(meter.textContent, /900 \/ 1000 字 · 余 100/);
+  assert.match(meter.textContent, /900 \/ 1000 chars · 100 remaining/);
   assert.equal(copy.disabled, false);
 
   body.value = '文'.repeat(1001);
   body.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
   assert.equal(body.value.length, 1001);
-  assert.match(meter.textContent, /1001 \/ 1000 字 · 超出 1/);
+  assert.match(meter.textContent, /1001 \/ 1000 chars · 1 over/);
   assert.equal(copy.disabled, true);
   assert.match(card.querySelector('[data-role="copy-limit-message"]').textContent, /1000/);
-  assert.match(card.querySelector('[data-role="copy-limit-message"]').textContent, /复制/);
+  assert.match(card.querySelector('[data-role="copy-limit-message"]').textContent, /Copy/);
 
   body.value = '文'.repeat(999);
   body.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
