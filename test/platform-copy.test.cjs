@@ -202,16 +202,16 @@ test('copy controls expose platform-aware accessible labels in both languages', 
   const { window } = dom;
   const medium = window.document.querySelector('.card[data-platform="medium"]');
   const xhs = window.document.querySelector('.card[data-platform="xhs"]');
-  assert.equal(medium.querySelector('[data-role="copy-content"]').getAttribute('aria-label'), '复制 Medium 故事');
-  assert.equal(medium.querySelector('[data-role="copy-tags"]').getAttribute('aria-label'), '复制 Medium 话题标签');
-  assert.equal(xhs.querySelector('[data-role="copy-tags"]').textContent, '复制话题标签');
+  assert.equal(medium.querySelector('[data-role="copy-content"]').getAttribute('aria-label'), 'Copy Medium story');
+  assert.equal(medium.querySelector('[data-role="copy-tags"]').getAttribute('aria-label'), 'Copy Medium hashtags');
+  assert.equal(xhs.querySelector('[data-role="copy-tags"]').textContent, 'COPY HASHTAGS');
 
   window.document.getElementById('langToggle').click();
 
-  assert.equal(medium.querySelector('[data-role="copy-content"]').getAttribute('aria-label'), 'Copy Medium story');
-  assert.equal(medium.querySelector('[data-role="copy-tags"]').getAttribute('aria-label'), 'Copy Medium hashtags');
-  assert.equal(medium.querySelector('[data-role="copy-tags"]').textContent, 'COPY HASHTAGS');
-  assert.equal(medium.querySelector('[data-role="copy-content"]').textContent, 'COPY STORY');
+  assert.equal(medium.querySelector('[data-role="copy-content"]').getAttribute('aria-label'), '复制 Medium 故事');
+  assert.equal(medium.querySelector('[data-role="copy-tags"]').getAttribute('aria-label'), '复制 Medium 话题标签');
+  assert.equal(medium.querySelector('[data-role="copy-tags"]').textContent, '复制话题标签');
+  assert.equal(medium.querySelector('[data-role="copy-content"]').textContent, '复制故事');
   dom.window.close();
 });
 
@@ -220,7 +220,7 @@ test('successful and failed clipboard writes show truthful temporary feedback', 
   const successButton = successDom.window.document.querySelector('[data-role="copy-content"]');
   installClipboard(successDom.window, async () => {});
   await clickAndFlush(successDom.window, successButton);
-  assert.equal(successButton.textContent, '已复制');
+  assert.equal(successButton.textContent, 'Copied');
   successDom.window.close();
 
   const failureDom = createApp({ twitter: platforms.twitter });
@@ -228,7 +228,7 @@ test('successful and failed clipboard writes show truthful temporary feedback', 
   installClipboard(failureDom.window, async () => { throw new Error('denied'); });
   failureDom.window.document.execCommand = () => false;
   await clickAndFlush(failureDom.window, failureButton);
-  assert.equal(failureButton.textContent, '复制失败');
-  assert.notEqual(failureButton.textContent, '已复制');
+  assert.equal(failureButton.textContent, 'Copy failed');
+  assert.notEqual(failureButton.textContent, 'Copied');
   failureDom.window.close();
 });
