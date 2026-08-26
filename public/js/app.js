@@ -366,6 +366,10 @@ function tagsCopyLabel(){
   return lang === 'zh' ? '复制话题标签' : 'COPY HASHTAGS';
 }
 
+function noteCopyLabel(){
+  return lang === 'zh' ? '复制 Note' : 'COPY NOTE';
+}
+
 function copyAccessibleLabel(platform, kind){
   const name = PLATFORM_META[platform].label;
   if(lang === 'zh'){
@@ -373,12 +377,14 @@ function copyAccessibleLabel(platform, kind){
       const noun = platform === 'substack' ? '文章' : platform === 'medium' ? '故事' : '文案';
       return `复制 ${name} ${noun}`;
     }
+    if(kind === 'note') return `复制 ${name} Note`;
     return `复制 ${name} 话题标签`;
   }
   if(kind === 'content'){
     const noun = platform === 'substack' ? 'article' : platform === 'medium' ? 'story' : 'text';
     return `Copy ${name} ${noun}`;
   }
+  if(kind === 'note') return `Copy ${name} note`;
   return `Copy ${name} hashtags`;
 }
 
@@ -386,7 +392,9 @@ function updateCopyControlLabel(button){
   const card = button.closest('.card');
   if(!card) return;
   const kind = button.dataset.copyKind;
-  button.textContent = kind === 'content' ? contentCopyLabel(card.dataset.platform) : tagsCopyLabel(card.dataset.platform);
+  button.textContent = kind === 'content'
+    ? contentCopyLabel(card.dataset.platform)
+    : kind === 'note' ? noteCopyLabel() : tagsCopyLabel();
   button.setAttribute('aria-label', copyAccessibleLabel(card.dataset.platform, kind));
 }
 
@@ -487,7 +495,7 @@ function renderCard(key, p){
     ${key === 'twitter'
       ? `<div class="thread-editor scrolling-content" data-role="threadeditor"></div><textarea data-role="body" hidden></textarea>`
       : `<textarea class="f-body scrolling-content" data-role="body" rows="1"></textarea>`}
-    ${'note' in p ? `<section class="note-block"><label class="note-label" data-role="note-label">${t('substackNote')}</label><textarea class="f-note" data-role="note" rows="1"></textarea></section>` : ''}
+    ${'note' in p ? `<section class="note-block"><div class="note-head"><label class="note-label" data-role="note-label">${t('substackNote')}</label><button class="utility-copy-btn" type="button" data-role="copy-note" data-copy-kind="note"></button></div><textarea class="f-note" data-role="note" rows="1"></textarea></section>` : ''}
     <div class="copy-limit-message" id="copyLimit-${key}" data-role="copy-limit-message" aria-live="polite" hidden></div>
     <div class="chip-editor" data-role="chipeditor">
       <div class="chip-editor-fields" data-role="chipfields">
@@ -532,6 +540,7 @@ function renderCard(key, p){
   const chipInput = card.querySelector('[data-role="chipinput"]');
   const tagCopyRow = card.querySelector('.tag-copy-row');
   const contentCopyButton = card.querySelector('[data-role="copy-content"]');
+  const noteCopyButton = card.querySelector('[data-role="copy-note"]');
   const tagsCopyButton = card.querySelector('[data-role="copy-tags"]');
   let tags = normalizeHashtags(initialTags.split(','));
   chipInput.placeholder = t('tagPh');
@@ -570,6 +579,7 @@ function renderCard(key, p){
   renderChips();
   card._getTags = () => tags.slice();
   updateCopyControlLabel(contentCopyButton);
+  if(noteCopyButton) updateCopyControlLabel(noteCopyButton);
   updateCopyControlLabel(tagsCopyButton);
 
   const threadEditors = [];
@@ -669,7 +679,7 @@ function renderCard(key, p){
   contentCopyButton.addEventListener('click', ()=>{
     const get = role => { const el = card.querySelector('[data-role="'+role+'"]'); return el ? el.value : ''; };
     commitChip();
-    const parts = [get('title'), get('subtitle'), get('preview'), get('body'), get('note')];
+    const parts = [get('title'), get('subtitle'), get('preview'), get('body')];
     const full = parts.filter(Boolean).join('\n\n');
     copyText(full).then(()=>{
       showCopyFeedback(contentCopyButton, true);
@@ -677,6 +687,15 @@ function renderCard(key, p){
       showCopyFeedback(contentCopyButton, false);
     });
   });
+  if(noteCopyButton){
+    noteCopyButton.addEventListener('click', ()=>{
+      copyText(card.querySelector('[data-role="note"]').value).then(()=>{
+        showCopyFeedback(noteCopyButton, true);
+      }).catch(()=>{
+        showCopyFeedback(noteCopyButton, false);
+      });
+    });
+  }
   tagsCopyButton.addEventListener('click', e=>{
     e.stopPropagation();
     commitChip();

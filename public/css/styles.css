@@ -150,7 +150,8 @@ button#go:disabled{opacity:.4;cursor:default;}
 .f-body.scrolling-content:focus{box-shadow:none;}
 .thread-editor.scrolling-content{align-content:start;}
 .note-block{border-top:1px solid var(--border-soft);padding-top:14px;margin:0 0 16px;}
-.note-label{display:block;font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--accent);margin-bottom:7px;}
+.note-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px;}
+.note-label{display:block;font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--accent);}
 .f-note{display:block;width:100%;min-height:76px;font-family:var(--font-body);font-size:14px;line-height:1.65;color:var(--ink);border:1px solid var(--border-soft);padding:10px 12px;background:var(--surface1);resize:vertical;}
 .f-note:focus{outline:none;border-color:var(--ink);}
 

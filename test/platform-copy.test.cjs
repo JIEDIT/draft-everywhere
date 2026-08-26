@@ -86,16 +86,43 @@ test('Medium content copy follows title, subtitle, body publishing order', async
   dom.window.close();
 });
 
-test('Substack content copy includes the newsletter and its separate promotional note', async () => {
+test('Substack article and note copy controls copy only their edited sections', async () => {
   const dom = createApp({ substack: platforms.substack });
   const { window } = dom;
   const card = window.document.querySelector('.card[data-platform="substack"]');
   const copied = [];
   installClipboard(window, async text => copied.push(text));
+  card.querySelector('[data-role="body"]').value = 'Edited article body';
+  card.querySelector('[data-role="note"]').value = 'Edited promotional note';
 
   await clickAndFlush(window, card.querySelector('[data-role="copy-content"]'));
+  await clickAndFlush(window, card.querySelector('[data-role="copy-note"]'));
 
-  assert.deepEqual(copied, ['Newsletter title\n\nNewsletter preview\n\nArticle body\n\nPromotional note']);
+  assert.deepEqual(copied, [
+    'Newsletter title\n\nNewsletter preview\n\nEdited article body',
+    'Edited promotional note',
+  ]);
+  dom.window.close();
+});
+
+test('Substack article and note copy feedback states are independent', async () => {
+  const dom = createApp({ substack: platforms.substack });
+  const { window } = dom;
+  const card = window.document.querySelector('.card[data-platform="substack"]');
+  const articleButton = card.querySelector('[data-role="copy-content"]');
+  const noteButton = card.querySelector('[data-role="copy-note"]');
+  installClipboard(window, async () => {});
+
+  assert.equal(articleButton.textContent, 'COPY ARTICLE');
+  assert.equal(noteButton.textContent, 'COPY NOTE');
+
+  await clickAndFlush(window, articleButton);
+  assert.equal(articleButton.textContent, 'Copied');
+  assert.equal(noteButton.textContent, 'COPY NOTE');
+
+  await clickAndFlush(window, noteButton);
+  assert.equal(articleButton.textContent, 'Copied');
+  assert.equal(noteButton.textContent, 'Copied');
   dom.window.close();
 });
 
