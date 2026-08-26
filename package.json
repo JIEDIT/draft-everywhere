@@ -28,7 +28,7 @@
     "twitter-text": "^3.1.0"
   },
   "devDependencies": {
-    "jsdom": "^26.1.0",
+    "jsdom": "^30.0.1",
     "wrangler": "^4.114.0"
   }
 }
