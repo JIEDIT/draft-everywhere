@@ -29,6 +29,6 @@
   },
   "devDependencies": {
     "jsdom": "^26.1.0",
-    "wrangler": "^4.114.0"
+    "wrangler": "^4.125.0"
   }
 }
